@@ -188,11 +188,11 @@ CppLog &CppLog::operator<<(const T &arg)
 void CppLog::localtime_i(const std::time_t *timer, std::tm *tp)
 {
 #if defined(_WIN32) && defined(__BORLANDC__)
-    localtime_s(timer, tp);
+    ::localtime_s(timer, tp);
 #elif defined(_WIN32)
-    localtime_s(tp, timer);
+    ::localtime_s(tp, timer);
 #else
-    localtime_r(timer, tp);
+    ::localtime_r(timer, tp);
 #endif
 }
 
@@ -202,14 +202,14 @@ std::string CppLog::thread_id()
 
     fmt << "[ ";
 #if defined(_WIN32)
-    fmt << GetCurrentThreadId();
+    fmt << ::GetCurrentThreadId();
 #elif defined(SYS_gettid)
-    fmt << syscall(SYS_gettid);
+    fmt << ::syscall(SYS_gettid);
 #elif defined(__NR_gettid)
-    fmt << syscall(__NR_gettid);
+    fmt << ::syscall(__NR_gettid);
 #elif defined(SYS_thr_self)
     long tid;
-    syscall(SYS_thr_self, &tid);
+    ::syscall(SYS_thr_self, &tid);
     fmt << tid;
 #else
     fmt << "---";
