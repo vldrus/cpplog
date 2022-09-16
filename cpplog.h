@@ -80,7 +80,7 @@ public:
 
     static Config &config();
 
-    static std::vector<std::shared_ptr<Appender>> appenders();
+    static std::vector<std::shared_ptr<Appender>> &appenders();
 
     CppLog(const Data &data);
 
@@ -111,7 +111,7 @@ CppLog::Config &CppLog::config()
     return config;
 }
 
-std::vector<std::shared_ptr<CppLog::Appender>> CppLog::appenders()
+std::vector<std::shared_ptr<CppLog::Appender>> &CppLog::appenders()
 {
     static std::vector<std::shared_ptr<Appender>> appenders{
         std::shared_ptr<Appender>(new ConsoleAppender())};
