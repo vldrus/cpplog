@@ -1,0 +1,9 @@
+/build
+
+/.vscode
+
+/.idea
+*.iml
+
+/cmake-build-debug
+/cmake-build-release
