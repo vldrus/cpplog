@@ -21,29 +21,29 @@
     cpplog::Logger(cpplog::LogData{"", __FILE__, std::to_string(__LINE__)})
 
 #define LOG_DEBUG                                       \
-    if (cpplog::config().level <= cpplog::Level::DEBUG) \
+    if (cpplog::config().level <= cpplog::Level::Debug) \
     cpplog::Logger(cpplog::LogData{"D", __FILE__, std::to_string(__LINE__)})
 
 #define LOG_INFO                                       \
-    if (cpplog::config().level <= cpplog::Level::INFO) \
+    if (cpplog::config().level <= cpplog::Level::Info) \
     cpplog::Logger(cpplog::LogData{"I", __FILE__, std::to_string(__LINE__)})
 
 #define LOG_WARN                                       \
-    if (cpplog::config().level <= cpplog::Level::WARN) \
+    if (cpplog::config().level <= cpplog::Level::Warn) \
     cpplog::Logger(cpplog::LogData{"W", __FILE__, std::to_string(__LINE__)})
 
 #define LOG_ERROR                                       \
-    if (cpplog::config().level <= cpplog::Level::ERROR) \
+    if (cpplog::config().level <= cpplog::Level::Error) \
     cpplog::Logger(cpplog::LogData{"E", __FILE__, std::to_string(__LINE__)})
 
 namespace cpplog
 {
     enum class Level : int
     {
-        DEBUG = 1,
-        INFO,
-        WARN,
-        ERROR
+        Debug = 1,
+        Info,
+        Warn,
+        Error
     };
 
     struct Config
@@ -180,7 +180,7 @@ namespace cpplog
     Config &config()
     {
         static Config config{
-            /* .level  = */ Level::INFO,
+            /* .level  = */ Level::Info,
             /* .label  = */ true,
             /* .date   = */ true,
             /* .time   = */ true,

@@ -1,10 +1,11 @@
 /* SPDX-License-Identifier: MIT */
 
+#include <windows.h>
 #include <cpplog.h>
 
 int main()
 {
-    cpplog::config().level = cpplog::Level::DEBUG;
+    cpplog::config().level = cpplog::Level::Debug;
 
     LOG << "This is just log";
 
