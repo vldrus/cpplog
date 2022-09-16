@@ -114,7 +114,7 @@ CppLog::Config &CppLog::config()
 std::vector<std::shared_ptr<CppLog::Appender>> &CppLog::appenders()
 {
     static std::vector<std::shared_ptr<Appender>> appenders{
-        std::shared_ptr<Appender>(new ConsoleAppender())};
+        std::make_shared<ConsoleAppender>()};
     return appenders;
 }
 
