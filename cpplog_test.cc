@@ -6,6 +6,10 @@ int main()
 {
     CppLog::config().level = CppLog::DEBUG;
 
+    LOG << "This is just log";
+
+    CppLog::config().source = true;
+
     LOG_DEBUG << "This is debug";
     LOG_INFO  << "This is info";
     LOG_WARN  << "This is warn";
