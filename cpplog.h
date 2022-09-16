@@ -69,7 +69,7 @@ namespace cpplog
         virtual void append(const std::string &);
     };
 
-    class ConsoleAppender : public Appender
+    class ConsoleAppender : public cpplog::Appender
     {
     public:
         void append(const std::string &s) override;
