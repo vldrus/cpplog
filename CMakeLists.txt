@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: MIT #
 
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.15 FATAL_ERROR)
 
 project(cpplog VERSION 0.1.0 LANGUAGES CXX)
 
