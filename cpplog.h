@@ -48,7 +48,7 @@ namespace cpplog
 
     struct Config
     {
-        cpplog::Level level;
+        Level level;
         bool label;
         bool date;
         bool time;
@@ -69,7 +69,7 @@ namespace cpplog
         virtual void append(const std::string &);
     };
 
-    class ConsoleAppender : public cpplog::Appender
+    class ConsoleAppender : public Appender
     {
     public:
         void append(const std::string &s) override;
@@ -78,20 +78,20 @@ namespace cpplog
     class Logger
     {
     public:
-        Logger(const cpplog::LogData &data);
+        Logger(const LogData &data);
         ~Logger();
 
         template <typename T>
-        cpplog::Logger &operator<<(const T &arg);
+        Logger &operator<<(const T &arg);
 
     private:
-        cpplog::LogData m_data;
+        LogData m_data;
         std::ostringstream m_oss;
     };
 
-    cpplog::Config &config();
+    Config &config();
 
-    std::vector<std::shared_ptr<cpplog::Appender>> &appenders();
+    std::vector<std::shared_ptr<Appender>> &appenders();
 
     void localtime_i(const std::time_t *timer, std::tm *tp);
 
@@ -100,135 +100,135 @@ namespace cpplog
 #if defined(_WIN32)
     extern "C" __declspec(dllimport) unsigned long __stdcall GetCurrentThreadId();
 #endif
-}
 
-void cpplog::Appender::append(const std::string &)
-{
-}
-
-void cpplog::ConsoleAppender::append(const std::string &s)
-{
-    std::cerr << s + '\n';
-}
-
-cpplog::Logger::Logger(const cpplog::LogData &data)
-    : m_data(data)
-{
-}
-
-cpplog::Logger::~Logger()
-{
-    auto now = std::chrono::system_clock::now();
-    auto now_time = std::chrono::system_clock::to_time_t(now);
-    auto now_epoch = now.time_since_epoch();
-    auto now_millis =
-        std::chrono::duration_cast<std::chrono::milliseconds>(now_epoch)
-            .count();
-
-    std::tm now_tm;
-
-    cpplog::localtime_i(&now_time, &now_tm);
-
-    std::ostringstream fmt;
-
-    if (cpplog::config().label)
+    void Appender::append(const std::string &)
     {
-        fmt << (this->m_data.label.empty() ? "" : this->m_data.label + ' ');
     }
-    if (cpplog::config().date)
+
+    void ConsoleAppender::append(const std::string &s)
     {
-        fmt << std::put_time(&now_tm, "%Y-%m-%d")
-            << ' ';
+        std::cerr << s + '\n';
     }
-    if (cpplog::config().time)
+
+    Logger::Logger(const LogData &data)
+        : m_data(data)
     {
-        fmt << std::put_time(&now_tm, "%H:%M:%S")
-            << '.'
-            << std::setw(3) << std::setfill('0') << (now_millis % 1000)
-            << ' ';
     }
-    if (cpplog::config().thread)
+
+    Logger::~Logger()
     {
-        fmt << cpplog::thread_id()
-            << ' ';
+        auto now = std::chrono::system_clock::now();
+        auto now_time = std::chrono::system_clock::to_time_t(now);
+        auto now_epoch = now.time_since_epoch();
+        auto now_millis =
+            std::chrono::duration_cast<std::chrono::milliseconds>(now_epoch)
+                .count();
+
+        std::tm now_tm;
+
+        localtime_i(&now_time, &now_tm);
+
+        std::ostringstream fmt;
+
+        if (config().label)
+        {
+            fmt << (this->m_data.label.empty() ? "" : this->m_data.label + ' ');
+        }
+        if (config().date)
+        {
+            fmt << std::put_time(&now_tm, "%Y-%m-%d")
+                << ' ';
+        }
+        if (config().time)
+        {
+            fmt << std::put_time(&now_tm, "%H:%M:%S")
+                << '.'
+                << std::setw(3) << std::setfill('0') << (now_millis % 1000)
+                << ' ';
+        }
+        if (config().thread)
+        {
+            fmt << thread_id()
+                << ' ';
+        }
+        if (config().source)
+        {
+            fmt << '('
+                << this->m_data.file.substr(this->m_data.file.find_last_of("/\\") + 1)
+                << ':'
+                << this->m_data.line
+                << ')'
+                << ' ';
+        }
+        fmt << this->m_oss.str();
+
+        auto res = fmt.str();
+
+        for (auto appender : appenders())
+        {
+            appender->append(res);
+        }
     }
-    if (cpplog::config().source)
+
+    template <typename T>
+    Logger &Logger::operator<<(const T &arg)
     {
-        fmt << '('
-            << this->m_data.file.substr(this->m_data.file.find_last_of("/\\") + 1)
-            << ':'
-            << this->m_data.line
-            << ')'
-            << ' ';
+        this->m_oss << arg;
+        return *this;
     }
-    fmt << this->m_oss.str();
 
-    auto res = fmt.str();
-
-    for (auto appender : cpplog::appenders())
+    Config &config()
     {
-        appender->append(res);
+        static Config config{
+            /* .level  = */ Level::INFO,
+            /* .label  = */ true,
+            /* .date   = */ true,
+            /* .time   = */ true,
+            /* .thread = */ true,
+            /* .source = */ false};
+        return config;
     }
-}
 
-template <typename T>
-cpplog::Logger &cpplog::Logger::operator<<(const T &arg)
-{
-    this->m_oss << arg;
-    return *this;
-}
+    std::vector<std::shared_ptr<Appender>> &appenders()
+    {
+        static std::vector<std::shared_ptr<Appender>> appenders{
+            std::make_shared<ConsoleAppender>()};
+        return appenders;
+    }
 
-cpplog::Config &cpplog::config()
-{
-    static cpplog::Config config{
-        /* .level  = */ cpplog::Level::INFO,
-        /* .label  = */ true,
-        /* .date   = */ true,
-        /* .time   = */ true,
-        /* .thread = */ true,
-        /* .source = */ false};
-    return config;
-}
-
-std::vector<std::shared_ptr<cpplog::Appender>> &cpplog::appenders()
-{
-    static std::vector<std::shared_ptr<cpplog::Appender>> appenders{
-        std::make_shared<cpplog::ConsoleAppender>()};
-    return appenders;
-}
-
-void cpplog::localtime_i(const std::time_t *timer, std::tm *tp)
-{
+    void localtime_i(const std::time_t *timer, std::tm *tp)
+    {
 #if defined(_WIN32) && defined(__BORLANDC__)
-    ::localtime_s(timer, tp);
+        ::localtime_s(timer, tp);
 #elif defined(_WIN32)
-    ::localtime_s(tp, timer);
+        ::localtime_s(tp, timer);
 #else
-    ::localtime_r(timer, tp);
+        ::localtime_r(timer, tp);
 #endif
-}
+    }
 
-std::string cpplog::thread_id()
-{
-    std::ostringstream fmt;
+    std::string thread_id()
+    {
+        std::ostringstream fmt;
 
-    fmt << "[ ";
+        fmt << "[ ";
 #if defined(_WIN32)
-    fmt << cpplog::GetCurrentThreadId();
+        fmt << GetCurrentThreadId();
 #elif defined(SYS_gettid)
-    fmt << ::syscall(SYS_gettid);
+        fmt << ::syscall(SYS_gettid);
 #elif defined(__NR_gettid)
-    fmt << ::syscall(__NR_gettid);
+        fmt << ::syscall(__NR_gettid);
 #elif defined(SYS_thr_self)
-    long tid;
-    ::syscall(SYS_thr_self, &tid);
-    fmt << tid;
+        long tid;
+        ::syscall(SYS_thr_self, &tid);
+        fmt << tid;
 #else
-    fmt << "---";
+        fmt << "---";
 #endif
-    fmt << " ]";
+        fmt << " ]";
 
-    return fmt.str();
+        return fmt.str();
+    }
 }
 
 #endif /* CPPLOG_H */
