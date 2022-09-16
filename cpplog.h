@@ -140,8 +140,7 @@ CppLog::~CppLog()
 
     if (CppLog::config().label)
     {
-        fmt << m_data.label
-            << (m_data.label.empty() ? "" : " ");
+        fmt << (m_data.label.empty() ? "" : m_data.label + ' ');
     }
     if (CppLog::config().date)
     {
