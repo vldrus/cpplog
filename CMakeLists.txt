@@ -14,5 +14,7 @@ target_include_directories(cpplog INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
 
 install(TARGETS cpplog)
 
+find_package(Threads)
+
 add_executable(cpplog_test EXCLUDE_FROM_ALL cpplog_test.cc)
-target_link_libraries(cpplog_test PRIVATE cpplog::cpplog)
+target_link_libraries(cpplog_test PRIVATE Threads::Threads cpplog::cpplog)
