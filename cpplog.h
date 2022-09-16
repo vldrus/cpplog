@@ -132,7 +132,7 @@ namespace cpplog
 
         if (config().label)
         {
-            fmt << (this->m_data.label.empty() ? "" : this->m_data.label + ' ');
+            fmt << (m_data.label.empty() ? "" : m_data.label + ' ');
         }
         if (config().date)
         {
@@ -154,13 +154,13 @@ namespace cpplog
         if (config().source)
         {
             fmt << '('
-                << this->m_data.file.substr(this->m_data.file.find_last_of("/\\") + 1)
+                << m_data.file.substr(m_data.file.find_last_of("/\\") + 1)
                 << ':'
-                << this->m_data.line
+                << m_data.line
                 << ')'
                 << ' ';
         }
-        fmt << this->m_oss.str();
+        fmt << m_oss.str();
 
         auto res = fmt.str();
 
@@ -173,7 +173,7 @@ namespace cpplog
     template <typename T>
     Logger &Logger::operator<<(const T &arg)
     {
-        this->m_oss << arg;
+        m_oss << arg;
         return *this;
     }
 
