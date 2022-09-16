@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: MIT */
 
-#include <windows.h>
 #include <cpplog.h>
 
 int main()
