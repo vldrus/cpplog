@@ -200,17 +200,21 @@ std::string CppLog::thread_id()
 {
     std::ostringstream fmt;
 
-    fmt << "[ "
+    fmt << "[ ";
 #if defined(_WIN32)
-        << GetCurrentThreadId()
+    fmt << GetCurrentThreadId();
 #elif defined(SYS_gettid)
-        << syscall(SYS_gettid)
+    fmt << syscall(SYS_gettid);
 #elif defined(__NR_gettid)
-        << syscall(__NR_gettid)
+    fmt << syscall(__NR_gettid);
+#elif defined(SYS_thr_self)
+    long tid;
+    syscall(SYS_thr_self, &tid);
+    fmt << tid;
 #else
-        << "---"
+    fmt << "---";
 #endif
-        << " ]";
+    fmt << " ]";
 
     return fmt.str();
 }
